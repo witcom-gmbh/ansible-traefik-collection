@@ -1,0 +1,77 @@
+---
+- name: Deploy Traefik-Container
+  vars:
+    traefik_container_name: "{{ inventory_hostname_short }}.traefik_{{ traefik_instance_name }}"
+  block:
+
+    - name: Gather info about specific network
+      containers.podman.podman_network_info:
+        name: "{{ traefik_network }}"
+      register: network_result
+      ignore_errors: True
+
+    - name: Create network for traefik if it does not exist
+      containers.podman.podman_network:
+        name: "{{ traefik_network }}"
+        state: "present"
+        recreate: "no"
+      when: network_result.failed
+
+    - name: Run traefik container
+      containers.podman.podman_container:
+        name: "{{ traefik_container_name }}"
+        image: "{{ traefik_image }}"
+        state: "{{ traefik_state }}"
+        user: root
+        recreate: "{{ traefik_recreate }}"
+        network: "{{ traefik_network }}"
+        publish:
+          -  "80:80"
+          -  "443:443"
+        label:
+          process=traefik
+        expose:
+          - "80"
+          - "443"
+        memory: "{{ traefik_memory_limit | default('1g') }}"
+        cpus: "{{ traefik_cpu_limit | default('1') }}"
+        env: "{{ traefik_env }}"
+#        cap_add:
+#          - ALL
+        volume:
+          - "{{ traefik_dir }}:/etc/traefik:z"
+      register: result
+      until: result is success
+      retries: 3
+      delay: 5
+
+- name: Create systemd service unit file for container
+  vars:
+    prefix: "container"
+    container_name: "{{ inventory_hostname_short }}.traefik_{{ traefik_instance_name }}"
+    service_unit: "{{ prefix }}-{{ container_name }}.service"
+    service_files_dir: "/etc/systemd/system"
+    container_stop_timeout: 30
+    service_enabled: "yes"
+    service_state: "started"
+  block:
+    - name: Generate systemd units by podman
+      command:
+        cmd: podman generate systemd -f -n -t "{{ container_stop_timeout }}" "{{ container_name }}"
+        chdir: "{{ service_files_dir }}"
+
+    - name: Check that generated service unit exists
+      ansible.builtin.stat:
+        path: "{{ service_files_dir }}/{{ service_unit }}"
+      register: stat_result
+
+    - name: Enable systemd service unit
+      ansible.builtin.systemd:
+        name: "{{ service_unit }}"
+        state: "{{ service_state }}"
+        daemon_reload: yes
+        enabled: "{{ service_enabled }}"
+      when: stat_result.stat.exists
+
+
+

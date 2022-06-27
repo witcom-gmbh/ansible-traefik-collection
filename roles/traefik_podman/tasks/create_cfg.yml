@@ -1,0 +1,11 @@
+#- name: debug
+#  debug:
+#    msg: "{{ lookup('ansible.builtin.template', './traefik.yml.j2') }}"
+
+- name: create static config file
+  ansible.builtin.template:
+    src: ./traefik.yml.j2
+    dest: "{{ traefik_dir }}/traefik.yml"
+    owner: root
+    group: root
+    mode: '0644'  

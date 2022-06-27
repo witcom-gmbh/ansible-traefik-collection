@@ -1,0 +1,13 @@
+---
+- name: Create persistent directories for Traefik configuration
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: '0755'
+  loop:
+    - "{{ traefik_dir }}"
+    - "{{ _file_provider_dir }}"
+    - "{{ _acme_dir }}"
+

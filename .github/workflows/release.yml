@@ -1,0 +1,50 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main-stop
+    paths:
+      - 'release.version'
+
+jobs:
+  build_release:
+    name: build_release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'      
+      - name: Install ansible
+        uses: BSFishy/pip-action@v1
+        with:
+          packages: |
+            ansible-core>=2.10
+            ansible-lint>=4.3.6
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: version
+        run: echo "::set-output name=version::$(cat ./release.version)"
+        id: version
+      - name: build artifacts
+        run: make build
+      - name: push tag with version
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ steps.version.outputs.version }}
+      - name: create-release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: false
+          artifactErrorsFailBuild: true
+          artifacts: "witcom-traefik-${{ steps.version.outputs.version }}.tar.gz"
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          bodyFile: "CHANGELOG.md"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          

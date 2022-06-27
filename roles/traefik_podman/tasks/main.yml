@@ -1,0 +1,22 @@
+---
+- name: Create directories
+  include_tasks:
+    file: "create_dirs.yml"
+    apply:
+      tags: create_dirs
+  tags: create_dirs
+
+- name: Create static traefik-config
+  include_tasks:
+    file: "create_cfg.yml"
+    apply:
+      tags: create_cfg
+  tags: create_cfg
+
+- name: Create traefik container
+  include_tasks:
+    file: "podman.yml"
+    apply:
+      tags: podman
+  tags: podman
+
