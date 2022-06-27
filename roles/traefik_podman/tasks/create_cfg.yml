@@ -1,7 +1,3 @@
-#- name: debug
-#  debug:
-#    msg: "{{ lookup('ansible.builtin.template', './traefik.yml.j2') }}"
-
 - name: create static config file
   ansible.builtin.template:
     src: ./traefik.yml.j2
@@ -9,3 +5,13 @@
     owner: root
     group: root
     mode: '0644'  
+
+- name: Wait a bit
+  ansible.builtin.pause:
+    seconds: 10
+
+- name: Touch the file to trigger parsing by traefik
+  ansible.builtin.file:
+    path: "{{ traefik_dir }}/traefik.yml"
+    state: touch
+
