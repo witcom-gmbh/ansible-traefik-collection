@@ -5,16 +5,30 @@ traefik_dir: "/etc/traefik"
 
 _file_provider_dir: "{{ traefik_dir }}/file-provider-config"
 
-traefik_config: {}
-#  name: a-random-name
-#  type: http
-#  state: present 
-#  definition:
-#    routers:
-#      router0:
-#        entryPoints:
-#        - web
-#        middlewares:
-#        - my-basic-auth
-#        service: service-foo
-#        rule: Path(`/foo`)
+traefik_configs: {}
+#  - name: a-random-name
+#    state: absent
+#    type: tcp
+#    definition:
+#    # siehe offizielle Traefik-Dokumentation
+#      routers:
+#        router0:
+#          entryPoints:
+#          - web
+#          middlewares:
+#          - my-basic-auth
+#          service: service-foo
+#          rule: Path(`/foo`)
+#  - name: another-random-name
+#    state: absent
+#    type: http
+#    definition:
+#      routers:
+#        router0:
+#          entryPoints:
+#          - web
+#          middlewares:
+#          - my-basic-auth
+#          service: service-foo
+#          rule: Path(`/foo2`)
+

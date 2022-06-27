@@ -1,31 +1,66 @@
-Role Name
-=========
+traefik_file_configuration
+==========================
 
-A brief description of the role goes here.
+Deployment von Traefik-Konfigurationen für den File-Configuration-Provider
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+* Eine existierende Traefik-Installation
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Verfügbare Variablen mit Default-Werten (siehe auch `defaults/main.yml`) werden hier aufgelistet
 
-Dependencies
-------------
+    traefik_dir: "/etc/traefik"
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+Basis-Host-Verzeichnis mit Traefik-Konfiguration. Unterhalb dieses Verzeichnisses     
+
+    _file_provider_dir: "{{ traefik_dir }}/file-provider-config"
+
+Verzeichnis für File-Provider-Config. Muss unterhalb von `traefik_dir` liegen
+
+    traefik_configs: {}
+
+Dictionary für Traefik-Konfigurationen. Details siehe `defaults/main.yml` 
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```
+---
+- hosts: all
+  remote_user: "conductor"
+  become: yes
+  become_method: sudo
+  collections:
+    - witcom.traefik
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+- name: Configure traefik
+  remote_user: "conductor"
+  hosts: mrtg_hosts
+  become: yes
+  become_method: sudo
+  vars:
+    traefik_configs:
+    - name: a-random-name
+      state: present
+      type: http
+      definition:
+      # siehe offizielle Traefik-Dokumentation
+        routers:
+          router0:
+            entryPoints:
+            - web
+            middlewares:
+            - my-basic-auth
+            service: service-foo
+            rule: Path(`/foo`)
+            # ... usw
+  roles:
+    - name: witcom.traefik.traefik_file_configuration
+```
 
 License
 -------
@@ -35,4 +70,4 @@ BSD
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+

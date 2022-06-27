@@ -5,9 +5,6 @@ traefik_instance_name: internal
 
 traefik_dir: "/etc/traefik"
 
-_file_provider_dir: "{{ traefik_dir }}/file-provider-config"
-_acme_dir: "{{ traefik_dir }}/acme"
-
 #env_vars
 
 traefik_env: {}
@@ -22,3 +19,6 @@ traefik_network: traefik
 
 traefik_state: "present"
 traefik_recreate: "no"
+
+_file_provider_dir: "{{ traefik_dir }}/file-provider-config"
+_acme_dir: "{{ traefik_dir }}/acme"
