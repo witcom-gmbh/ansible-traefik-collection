@@ -71,7 +71,15 @@
         state: "{{ service_state }}"
         daemon_reload: yes
         enabled: "{{ service_enabled }}"
+      ignore_errors: true
       when: stat_result.stat.exists
-
-
+      
+    - name: Ensure service is in a running state
+      service:
+          name: "{{ service_unit }}" 
+          state: started
+      register: myserviceDetails
+      until: myserviceDetails.status.ActiveState == "active"
+      retries: 15
+      delay: 20
 
