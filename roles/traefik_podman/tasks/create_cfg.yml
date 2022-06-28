@@ -4,7 +4,7 @@
     dest: "{{ traefik_dir }}/traefik.yml"
     owner: root
     group: root
-    mode: '0644'  
+    mode: '0644'
 
 - name: Wait a bit
   ansible.builtin.pause:
@@ -14,4 +14,5 @@
   ansible.builtin.file:
     path: "{{ traefik_dir }}/traefik.yml"
     state: touch
+    mode: '0644'
 

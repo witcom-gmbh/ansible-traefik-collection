@@ -2,18 +2,22 @@
 # tasks file for traefik_file_configuration
 
 - name: check if configuration-directory exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ _file_provider_dir }}"
   register: config_dir
 
-- ansible.builtin.fail:
+- name: Fail if config-dir does not exist
+  ansible.builtin.fail:
     msg: "Config-Directory {{ _file_provider_dir }} does not exist !"
   when: not config_dir.stat.exists
 
 - name: template out file
-  template:
+  ansible.builtin.template:
     src: "file_config.yml.j2"
-    dest: "{{ _file_provider_dir}}/{{ item.name | trim }}.yml"
+    dest: "{{ _file_provider_dir }}/{{ item.name | trim }}.yml"
+    #owner: root
+    #group: root
+    mode: '0644'    
   with_items: '{{ traefik_configs | default([]) }}'
   when: item.state | default('present') == 'present'
 

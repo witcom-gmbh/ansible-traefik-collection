@@ -1,6 +1,6 @@
 ---
 - name: Create persistent directories for Traefik configuration
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: "root"

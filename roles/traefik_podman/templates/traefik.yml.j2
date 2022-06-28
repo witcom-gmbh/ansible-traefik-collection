@@ -13,5 +13,5 @@ providers:
     watch: true
 
 certificatesResolvers:
-  {{ traefik_certificatesResolvers | to_nice_yaml(indent=2) | trim | indent(2) }}
+  {{ traefik_certificates_resolvers | to_nice_yaml(indent=2) | trim | indent(2) }}
 

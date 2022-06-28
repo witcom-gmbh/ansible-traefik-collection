@@ -9,7 +9,7 @@ traefik_dir: "/etc/traefik"
 
 traefik_env: {}
 
-traefik_certificatesResolvers: {}
+traefik_certificates_resolvers: {}
 
 traefik_image: "docker.io/library/traefik:v2.7"
 

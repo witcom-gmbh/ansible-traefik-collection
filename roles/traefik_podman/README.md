@@ -31,7 +31,7 @@ Verzeichnisse für File-Provider-Config & Zertifikatsdaten. Müssen unterhalb vo
 
 Dictionary für Umgebungsvariablen, z.B: für Let's-Encrypt Zertifikats-Resolver    
 
-     traefik_certificatesResolvers: {}
+     traefik_certificates_resolvers: {}
 
 Dictionary mit Traefik-Zertifikatsresolvern. Konfiguration entspricht 1:1 der Konfiguration der certificateResolvers-Konfiguration von Traefik (https://doc.traefik.io/traefik/https/acme/#certificate-resolvers)
 
@@ -67,7 +67,7 @@ traefik_env:
   PDNS_PROPAGATION_TIMEOUT: "120"
   PDNS_POLLING_INTERVAL: "2"
 
-traefik_certificatesResolvers:
+traefik_certificates_resolvers:
   pdns-staging-resolver:
     acme:
       email: systeme@org.tld
