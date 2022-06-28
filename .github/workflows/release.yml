@@ -3,7 +3,7 @@ name: release
 on:
   push:
     branches:
-      - main-stop
+      - main
     paths:
       - 'release.version'
 
