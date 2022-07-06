@@ -22,3 +22,4 @@ traefik_recreate: "no"
 
 _file_provider_dir: "{{ traefik_dir }}/file-provider-config"
 _acme_dir: "{{ traefik_dir }}/acme"
+_traefik_podman_service_unit: "container-{{ inventory_hostname_short }}.traefik_{{ traefik_instance_name }}"

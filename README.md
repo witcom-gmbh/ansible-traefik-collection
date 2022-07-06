@@ -28,6 +28,12 @@ Nicht in main - Branch.
 
 - Neue Branch erstellen
 - Anpassen, testen, etc.
-- Wenn es passt -> Release-Version in Datei release.version anpassen (SemVer), CHANGELOG.md anpassen (https://keepachangelog.com/en/1.0.0/), commit, PR erstellen
+- Wenn es passt -> commit (single commit, signed-off), PR erstellen
 
-PR muss genehmigt werden, dann wird automatisch mittels GitHub Action ein Release (.tar.gz) erzeugt. Ein Build erfolgt nur wenn die Datei release.version angepasst wurde.
+PR muss genehmigt werden, dann
+
+- Release-Version in Datei release.version anpassen (SemVer)
+- CHANGELOG.md anpassen (https://keepachangelog.com/en/1.0.0/),
+- `make release_prepare`
+- Commit in main
+- dann wird automatisch mittels GitHub Action ein Release (.tar.gz) erzeugt. Ein Build erfolgt nur wenn die Datei release.version angepasst wurde.

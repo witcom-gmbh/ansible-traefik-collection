@@ -30,58 +30,19 @@
           -  "443:443"
         label:
           process=traefik
-        expose:
-          - "80"
-          - "443"
-        memory: "{{ traefik_memory_limit | default('1g') }}"
-        cpus: "{{ traefik_cpu_limit | default('1') }}"
+        generate_systemd:
+          path: /etc/systemd/system
+          separator: "-"
+          container_prefix: "container"
+        memory: "{{ traefik_memory_limit | default('1g') | human_to_bytes }}"
+        memory_swap: "{{ traefik_memory_limit | default('1g') | human_to_bytes * 2 }}"
+        cpu_period: "{{ traefik_cpu_limit | default(1) | int * 100000 }}"        
         env: "{{ traefik_env }}"
-#        cap_add:
-#          - ALL
         volume:
           - "{{ traefik_dir }}:/etc/traefik:z"
       register: result
       until: result is success
       retries: 3
       delay: 5
-
-- name: Create systemd service unit file for container
-  vars:
-    prefix: "container"
-    container_name: "{{ inventory_hostname_short }}.traefik_{{ traefik_instance_name }}"
-    service_unit: "{{ prefix }}-{{ container_name }}.service"
-    service_files_dir: "/etc/systemd/system"
-    container_stop_timeout: 30
-    service_enabled: "yes"
-    service_state: "started"
-  block:
-    - name: Generate systemd units by podman
-      ansible.builtin.command:
-        cmd: podman generate systemd -f -n -t "{{ container_stop_timeout }}" "{{ container_name }}"
-        chdir: "{{ service_files_dir }}"
-      register: register_output
-      changed_when: register_output.rc != 0
-
-    - name: Check that generated service unit exists
-      ansible.builtin.stat:
-        path: "{{ service_files_dir }}/{{ service_unit }}"
-      register: stat_result
-
-    - name: Enable systemd service unit
-      ansible.builtin.systemd:
-        name: "{{ service_unit }}"
-        state: "{{ service_state }}"
-        daemon_reload: yes
-        enabled: "{{ service_enabled }}"
-      ignore_errors: true
-      when: stat_result.stat.exists
-      
-    - name: Ensure service is in a running state
-      ansible.builtin.service:
-          name: "{{ service_unit }}" 
-          state: started
-      register: service_details
-      until: service_details.status.ActiveState == "active"
-      retries: 15
-      delay: 20
+      notify: enable-podman-systemd-service
 
